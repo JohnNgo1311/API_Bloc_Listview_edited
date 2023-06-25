@@ -1,15 +1,8 @@
-import 'dart:convert';
 import "package:bloc_demo/UserRepository.dart";
-import "package:bloc/bloc.dart";
-import 'package:bloc_demo/choose_page.dart';
 import 'package:bloc_demo/login_screen.dart';
 import 'package:bloc_demo/shopping_page/shopping_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import 'package:bloc_demo/Model/User_Model.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_event.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_state.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_bloc.dart';
@@ -17,7 +10,7 @@ import 'package:bloc_demo/detail_screen.dart';
 
 //Class Home
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -34,16 +27,12 @@ class _HomeState extends State<Home> {
               RepositoryProvider.of<UserRepository>(context),
             )..add(LoadUserEvent()),
         child: Scaffold(
-          backgroundColor: Color.fromARGB(255, 42, 244, 197),
+          backgroundColor: const Color.fromARGB(255, 42, 244, 197),
           appBar: AppBar(
             leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => choosePage(),
-                      ));
+                  Navigator.pop(context);
                 }),
             elevation: 0,
             title: Container(
@@ -53,11 +42,11 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            backgroundColor: Color.fromARGB(255, 28, 160, 183),
+            backgroundColor: const Color.fromARGB(255, 28, 160, 183),
           ),
           body: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
             return Container(
-              margin: EdgeInsets.all(8),
+              margin: const EdgeInsets.all(8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -70,9 +59,9 @@ class _HomeState extends State<Home> {
                             borderRadius: BorderRadius.circular(5),
                             borderSide: BorderSide.none),
                         hintText: "Eg: Johny",
-                        hintStyle: TextStyle(color: Colors.black54),
+                        hintStyle: const TextStyle(color: Colors.black54),
                         suffixIcon: IconButton(
-                            icon: Icon(Icons.search),
+                            icon: const Icon(Icons.search),
                             color: Colors.black,
                             iconSize: 25,
                             onPressed: () {
@@ -106,9 +95,10 @@ class _HomeState extends State<Home> {
                                     );
                                   },
                                   child: Card(
-                                    color: Color.fromARGB(255, 28, 160, 183),
+                                    color:
+                                        const Color.fromARGB(255, 28, 160, 183),
                                     child: ListTile(
-                                      leading: SizedBox(
+                                      leading: const SizedBox(
                                           height: 40,
                                           width: 40,
                                           child: Icon(Icons.people)),
@@ -128,7 +118,7 @@ class _HomeState extends State<Home> {
                         }
 
                         if (state is UserErrorState) {
-                          return Center(child: Text("Error"));
+                          return const Center(child: Text("Error"));
                         }
 
                         return Container();
@@ -139,6 +129,54 @@ class _HomeState extends State<Home> {
               ),
             );
           }),
+          bottomNavigationBar: BottomNavigationBar(
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.arrow_back,
+                    color: Color.fromARGB(255, 28, 160, 183)),
+                label: 'Back',
+                backgroundColor: Colors.white,
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.people,
+                    color: Color.fromARGB(255, 28, 160, 183)),
+                label: 'List View',
+                backgroundColor: Colors.white,
+              ),
+              BottomNavigationBarItem(
+                icon: IconButton(
+                  icon: const Icon(Icons.shopping_cart),
+                  color: const Color.fromARGB(255, 28, 160, 183),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ShoppingApp(),
+                        ));
+                  },
+                ),
+                label: 'Shopping',
+                backgroundColor: Colors.white,
+              ),
+              BottomNavigationBarItem(
+                icon: IconButton(
+                  icon: const Icon(Icons.logout,
+                      color: Color.fromARGB(255, 28, 160, 183)),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ));
+                  },
+                ),
+                label: 'Log out',
+              ),
+            ],
+            currentIndex: 1,
+            selectedItemColor: Colors.amber[800],
+            onTap: null,
+          ),
         ));
   }
 }

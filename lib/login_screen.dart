@@ -1,15 +1,8 @@
-import 'dart:convert';
-import "package:bloc_demo/UserRepository.dart";
-import "package:bloc/bloc.dart";
-import 'package:bloc_demo/home_page.dart';
 import 'package:bloc_demo/login/bloc/login_bloc.dart';
 import 'package:bloc_demo/login/bloc/login_event.dart';
 import 'package:bloc_demo/login/bloc/login_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:bloc_demo/choose_page.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           listener: (context, state) {
             if (state is LoginLoaded && state.check == true) {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => choosePage()));
+                  MaterialPageRoute(builder: (context) => const ChoosePage()));
             }
           },
           child: SingleChildScrollView(
@@ -52,27 +45,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                       width: 70,
                       height: 70,
-                      padding: EdgeInsets.only(right: 5),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.only(right: 5),
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.black,
                       ),
-                      child: Center(
+                      child: const Center(
                         child: FlutterLogo(
                           size: 65,
                         ),
                       )),
 
                   // Hi and WELCOME BACK FIELD
-                  Text(
+                  const Text(
                     'Hi!',
                     style: TextStyle(
                         color: Color.fromARGB(255, 28, 160, 183),
                         fontSize: 40,
                         fontWeight: FontWeight.bold),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 30),
                     child: Text(
                       'Welcome Back!!',
                       style: TextStyle(
@@ -90,8 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         username = newUsername;
                       },
                       controller: _accountCtroller,
-                      style: TextStyle(fontSize: 20, color: Colors.black),
-                      decoration: InputDecoration(
+                      style: const TextStyle(fontSize: 20, color: Colors.black),
+                      decoration: const InputDecoration(
                           labelText: "Username",
                           labelStyle: TextStyle(
                               color: Color.fromARGB(255, 135, 129, 126)))),
@@ -109,10 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           controller: _passCtroller,
                           obscureText: _isObscure,
-                          style: TextStyle(fontSize: 20, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.black),
                           decoration: InputDecoration(
                             labelText: "Password",
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 color: Color.fromARGB(255, 155, 153, 152)),
                             suffixIcon: IconButton(
                               icon: Icon(_isObscure
@@ -136,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: (50),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 28, 160, 183),
+                          backgroundColor:
+                              const Color.fromARGB(255, 28, 160, 183),
                         ),
                         onPressed: () {
                           BlocProvider.of<LoginBloc>(context).add(
@@ -144,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   password: _passCtroller.text,
                                   username: _accountCtroller.text));
                         },
-                        child: Text("Sign in",
+                        child: const Text("Sign in",
                             style:
                                 TextStyle(fontSize: 25, color: Colors.white)),
                       )),
@@ -155,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: <Widget>[
                       TextButton(
                         onPressed: () {},
-                        child: Text(
+                        child: const Text(
                           "sign up.",
                           style: TextStyle(
                               fontSize: 17,
@@ -165,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                           onPressed: () {},
-                          child: Text(
+                          child: const Text(
                             "Forget password?",
                             style: TextStyle(
                                 fontSize: 17,
