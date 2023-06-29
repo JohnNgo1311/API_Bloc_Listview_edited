@@ -1,4 +1,5 @@
 import 'package:bloc_demo/choose_page.dart';
+import 'package:bloc_demo/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -327,8 +328,17 @@ class _ShoppingAppState extends State<ShoppingApp> {
             label: 'Home',
             backgroundColor: Colors.white,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.people, color: Color.fromARGB(255, 28, 160, 183)),
+          BottomNavigationBarItem(
+            icon: IconButton(
+                icon: const Icon(Icons.people),
+                color: const Color.fromARGB(255, 28, 160, 183),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UserList(),
+                      ));
+                }),
             label: 'List View',
             backgroundColor: Colors.white,
           ),

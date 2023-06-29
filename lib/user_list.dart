@@ -1,3 +1,4 @@
+import 'dart:convert';
 import "package:bloc_demo/UserRepository.dart";
 import 'package:bloc_demo/login_screen.dart';
 import 'package:bloc_demo/shopping_page/shopping_page.dart';
@@ -7,19 +8,33 @@ import 'package:bloc_demo/User_getAPI/bloc/user_get_api_event.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_state.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_bloc.dart';
 import 'package:bloc_demo/detail_screen.dart';
+import 'package:bloc_demo/choose_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'Model/User_Model.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 //Class Home
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class UserList extends StatefulWidget {
+  const UserList({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<UserList> createState() => _UserListState();
 }
 
-class _HomeState extends State<Home> {
+class _UserListState extends State<UserList> {
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  TextEditingController filterKeyword = TextEditingController();
+  TextEditingController _controllerId = TextEditingController();
+  TextEditingController _controllerName = TextEditingController();
+  TextEditingController _controllerJob = TextEditingController();
+  TextEditingController _controllerEmail = TextEditingController();
+  TextEditingController _controllerPhoneNumber = TextEditingController();
+  TextEditingController _controllerAge = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController filterKeyword = TextEditingController(text: "");
     Size appsize = MediaQuery.of(context).size;
     bool visible = true;
     return BlocProvider(
@@ -35,62 +50,90 @@ class _HomeState extends State<Home> {
                   Navigator.pop(context);
                 }),
             elevation: 0,
-            title: Container(
-              margin: EdgeInsets.only(left: appsize.width * 0.18),
-              child: const Text(
-                'User Data List',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+            actions: [
+              TextButton(
+                child: const Text('Add User',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold)),
+                onPressed: () => addUser(context),
+              )
+            ],
+            centerTitle: true,
+            title: const Text(
+              'User Data List',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: const Color.fromARGB(255, 28, 160, 183),
           ),
-          body: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
-            return Container(
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: filterKeyword,
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide.none),
-                        hintText: "Eg: Johny",
-                        hintStyle: const TextStyle(color: Colors.black54),
-                        suffixIcon: IconButton(
-                            icon: const Icon(Icons.search),
-                            color: Colors.black,
-                            iconSize: 25,
-                            onPressed: () {
-                              BlocProvider.of<UserBloc>(context)
-                                  .add(FilterUserEvent(
-                                searchText: filterKeyword.text,
-                              ));
-                            })),
-                  ),
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        if (state is UserLoadingState) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+          body: Container(
+            margin: const EdgeInsets.all(8),
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              TextField(
+                controller: filterKeyword,
+                decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide.none),
+                    hintText: "Eg: Johny",
+                    hintStyle: const TextStyle(color: Colors.black54),
+                    suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        color: Colors.black,
+                        iconSize: 25,
+                        onPressed: () {
+                          BlocProvider.of<UserBloc>(context)
+                              .add(FilterUserEvent(
+                            searchText: filterKeyword.text,
+                          ));
+                        })),
+              ),
+              BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  if (state is UserLoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (state is UserLoadedState) {
+                    if (state.users.isEmpty)
+                      return const Center(
+                        child: Text('Empty'),
+                      );
+                  }
+                  if (state is UserErrorState) {
+                    return const Center(child: Text("Error"));
+                  }
 
-                        if (state is UserLoadedState) {
-                          return ListView.builder(
+                  return Expanded(child: Builder(builder: (context) {
+                    if (state is UserLoadedState) {
+                      if (state.users.isEmpty) {
+                        return CircularProgressIndicator();
+                      } else
+                        return SmartRefresher(
+                          controller: _refreshController,
+                          onRefresh: () async {
+                            await Future.delayed(
+                                const Duration(milliseconds: 1000));
+                            _refreshController.refreshCompleted();
+                            BlocProvider.of<UserBloc>(context)
+                                .add(LoadUserEvent());
+                          },
+                          child: ListView.builder(
                               itemCount: state.users.length,
-                              itemBuilder: (BuildContext, index) {
+                              itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => DetailScreen(
-                                          e: state.users[index],
-                                        ),
+                                        builder: (c) => DetailScreen(
+                                            e: state.users[index],
+                                            userBloc: BlocProvider.of<UserBloc>(
+                                                context)),
                                       ),
                                     );
                                   },
@@ -114,27 +157,29 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                 );
-                              });
-                        }
-
-                        if (state is UserErrorState) {
-                          return const Center(child: Text("Error"));
-                        }
-
-                        return Container();
-                      },
-                    ),
-                  ),
-                ],
+                              }),
+                        );
+                    }
+                    return Container();
+                  }));
+                },
               ),
-            );
-          }),
+            ]),
+          ),
           bottomNavigationBar: BottomNavigationBar(
             items: [
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.arrow_back,
-                    color: Color.fromARGB(255, 28, 160, 183)),
-                label: 'Back',
+              BottomNavigationBarItem(
+                icon: IconButton(
+                    icon: const Icon(Icons.home),
+                    color: const Color.fromARGB(255, 28, 160, 183),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChoosePage(),
+                          ));
+                    }),
+                label: 'Home',
                 backgroundColor: Colors.white,
               ),
               const BottomNavigationBarItem(
@@ -177,6 +222,120 @@ class _HomeState extends State<Home> {
             selectedItemColor: Colors.amber[800],
             onTap: null,
           ),
+        ));
+  }
+
+  Future<dynamic> addUser(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext contex) => AlertDialog(
+        title: const Text('Add User'),
+        content: SingleChildScrollView(
+          child: ListBody(children: [
+            TextField(
+              controller: _controllerId,
+              decoration: InputDecoration(hintText: "Your Id"),
+              onChanged: (value) => print(_controllerId.text),
+              cursorColor: const Color.fromARGB(255, 42, 244, 197),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+                controller: _controllerAge,
+                onChanged: (value) => print(_controllerAge.text),
+                decoration: const InputDecoration(hintText: "Your Age"),
+                cursorColor: const Color.fromARGB(255, 42, 244, 197)),
+            const SizedBox(height: 15),
+            TextField(
+                controller: _controllerJob,
+                onChanged: (value) => print(_controllerJob.text),
+                decoration: const InputDecoration(hintText: "Your Job"),
+                cursorColor: const Color.fromARGB(255, 42, 244, 197)),
+            const SizedBox(height: 15),
+            TextField(
+                controller: _controllerName,
+                decoration: const InputDecoration(hintText: "Your Name"),
+                onChanged: (value) => print(_controllerName.text),
+                cursorColor: const Color.fromARGB(255, 42, 244, 197)),
+            const SizedBox(height: 15),
+            TextField(
+                controller: _controllerEmail,
+                decoration: const InputDecoration(hintText: "Your Email"),
+                onChanged: (value) => print(_controllerEmail.text),
+                cursorColor: const Color.fromARGB(255, 42, 244, 197)),
+            const SizedBox(height: 15),
+            TextField(
+                controller: _controllerPhoneNumber,
+                decoration:
+                    const InputDecoration(hintText: "Your Phone Number"),
+                onChanged: (value) => print(_controllerPhoneNumber.text),
+                cursorColor: const Color.fromARGB(255, 42, 244, 197)),
+          ]),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(contex),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Register(
+                newId: _controllerId.text,
+                newAge: _controllerAge.text,
+                newJob: _controllerJob.text,
+                newName: _controllerName.text,
+                newEmail: _controllerEmail.text,
+                newPhone: _controllerPhoneNumber.text,
+              );
+              Navigator.pop(contex);
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
+// RE
+  Future Register(
+      {String? newId,
+      String? newAge,
+      String? newJob,
+      String? newName,
+      String? newEmail,
+      String? newPhone}) async {
+    var url = "https://retoolapi.dev/aMsZrK/data";
+    var urlParse = Uri.parse(url);
+    int newId = int.parse(_controllerId.text);
+    int newAge = int.parse(_controllerAge.text);
+    var bodyData = json.encode({
+      "id": newId,
+      "Age": newAge,
+      "Job": newJob,
+      "Name": newName,
+      "Email": newEmail,
+      "PhoneNumber": newPhone,
+    });
+    final response = await http.post(
+      urlParse,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: bodyData,
+    );
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      final result = jsonDecode(response.body);
+      print(result);
+      print(Text("Regist Successfully"));
+      return result.map(((e) => UserModel.fromJson(e))).toList();
+    } else
+      () {
+        print("error");
+      };
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserList(),
         ));
   }
 }

@@ -44,8 +44,9 @@ dependencies:
   flutter_bloc: ^8.1.1
   http: ^0.13.5
   equatable: ^2.0.5
-
+  
 dev_dependencies:   
+  pull_to_refresh: ^2.0.0
   flutter_test:
     sdk: flutter
 
