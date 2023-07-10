@@ -61,10 +61,10 @@ class _ShoppingAppState extends State<ShoppingApp> {
         // CONTAINER NỀN XANH
         Container(
           margin: const EdgeInsets.only(left: 15),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
+            children: [
               Text("Aristoratic HandBag ",
                   style: TextStyle(color: Colors.white, fontSize: 15)),
               Text("Office Code ",
@@ -100,11 +100,11 @@ class _ShoppingAppState extends State<ShoppingApp> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //Row đầu tiên chỉ có "color" và "size"
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 0, 25, 0),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(15, 0, 25, 0),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text("Color",
                             style: TextStyle(
                                 fontSize: 20,
@@ -232,7 +232,7 @@ class _ShoppingAppState extends State<ShoppingApp> {
                   ),
                 ),
                 // REMOVE OR ADD TO CART
-                removeoradd(),
+                const removeoradd(),
                 // ADDING TO CART (display an icon cart_shopping)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 25, 0, 0),
@@ -381,6 +381,8 @@ class _ShoppingAppState extends State<ShoppingApp> {
 }
 
 class removeoradd extends StatefulWidget {
+  const removeoradd({super.key});
+
   @override
   _removeoradd createState() => _removeoradd();
 }

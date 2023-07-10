@@ -1,18 +1,20 @@
 import 'dart:convert';
-import "package:bloc_demo/UserRepository.dart";
-import 'package:bloc_demo/login_screen.dart';
-import 'package:bloc_demo/shopping_page/shopping_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+
+import "package:bloc_demo/UserRepository.dart";
+import 'package:bloc_demo/User_getAPI/bloc/user_get_api_bloc.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_event.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_state.dart';
-import 'package:bloc_demo/User_getAPI/bloc/user_get_api_bloc.dart';
-import 'package:bloc_demo/detail_screen.dart';
 import 'package:bloc_demo/choose_page.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import 'Model/User_Model.dart';
+import 'package:bloc_demo/detail_screen.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:bloc_demo/login_screen.dart';
+import 'package:bloc_demo/shopping_page/shopping_page.dart';
+
+import 'Model/User_Model.dart';
 
 //Class Home
 class UserList extends StatefulWidget {
@@ -23,20 +25,18 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   TextEditingController filterKeyword = TextEditingController();
-  TextEditingController _controllerId = TextEditingController();
-  TextEditingController _controllerName = TextEditingController();
-  TextEditingController _controllerJob = TextEditingController();
-  TextEditingController _controllerEmail = TextEditingController();
-  TextEditingController _controllerPhoneNumber = TextEditingController();
-  TextEditingController _controllerAge = TextEditingController();
+  final TextEditingController _controllerId = TextEditingController();
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerJob = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPhoneNumber = TextEditingController();
+  final TextEditingController _controllerAge = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    Size appsize = MediaQuery.of(context).size;
-    bool visible = true;
     return BlocProvider(
         create: (context) => UserBloc(
               RepositoryProvider.of<UserRepository>(context),
@@ -100,10 +100,11 @@ class _UserListState extends State<UserList> {
                     );
                   }
                   if (state is UserLoadedState) {
-                    if (state.users.isEmpty)
+                    if (state.users.isEmpty) {
                       return const Center(
                         child: Text('Empty'),
                       );
+                    }
                   }
                   if (state is UserErrorState) {
                     return const Center(child: Text("Error"));
@@ -112,8 +113,8 @@ class _UserListState extends State<UserList> {
                   return Expanded(child: Builder(builder: (context) {
                     if (state is UserLoadedState) {
                       if (state.users.isEmpty) {
-                        return CircularProgressIndicator();
-                      } else
+                        return const CircularProgressIndicator();
+                      } else {
                         return SmartRefresher(
                           controller: _refreshController,
                           onRefresh: () async {
@@ -159,6 +160,7 @@ class _UserListState extends State<UserList> {
                                 );
                               }),
                         );
+                      }
                     }
                     return Container();
                   }));
@@ -234,7 +236,7 @@ class _UserListState extends State<UserList> {
           child: ListBody(children: [
             TextField(
               controller: _controllerId,
-              decoration: InputDecoration(hintText: "Your Id"),
+              decoration: const InputDecoration(hintText: "Your Id"),
               onChanged: (value) => print(_controllerId.text),
               cursorColor: const Color.fromARGB(255, 42, 244, 197),
             ),
@@ -326,16 +328,17 @@ class _UserListState extends State<UserList> {
       print(response.statusCode);
       final result = jsonDecode(response.body);
       print(result);
-      print(Text("Regist Successfully"));
+      print(const Text("Regist Successfully"));
       return result.map(((e) => UserModel.fromJson(e))).toList();
-    } else
+    } else {
       () {
         print("error");
       };
+    }
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => UserList(),
+          builder: (context) => const UserList(),
         ));
   }
 }

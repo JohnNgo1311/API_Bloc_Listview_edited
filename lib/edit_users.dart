@@ -1,12 +1,7 @@
 import 'dart:convert';
-import 'package:bloc_demo/UserRepository.dart';
-import 'package:bloc_demo/login_screen.dart';
 import 'package:bloc_demo/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import "Model/User_Model.dart";
-import 'detail_screen.dart';
-import 'package:bloc_demo/User_getAPI/bloc/user_get_api_bloc.dart';
 
 //Class Home
 class EditUser extends StatefulWidget {
@@ -30,13 +25,13 @@ class EditUser extends StatefulWidget {
 }
 
 class _EditUserState extends State<EditUser> {
-  TextEditingController filterKeyword = new TextEditingController();
-  TextEditingController _controllerId = new TextEditingController();
-  TextEditingController _controllerName = new TextEditingController();
-  TextEditingController _controllerJob = new TextEditingController();
-  TextEditingController _controllerEmail = new TextEditingController();
-  TextEditingController _controllerPhoneNumber = new TextEditingController();
-  TextEditingController _controllerAge = new TextEditingController();
+  TextEditingController filterKeyword = TextEditingController();
+  final TextEditingController _controllerId = TextEditingController();
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerJob = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPhoneNumber = TextEditingController();
+  final TextEditingController _controllerAge = TextEditingController();
 
   @override
   void initState() {
@@ -56,71 +51,72 @@ class _EditUserState extends State<EditUser> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 28, 160, 183),
-          title: Padding(
-            padding: const EdgeInsets.only(left: 100),
+          title: const Padding(
+            padding: EdgeInsets.only(left: 100),
             child: Text("Edit User"),
           ),
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.arrow_back))),
+              icon: const Icon(Icons.arrow_back))),
       body: getbody(),
     );
   }
 
   getbody() {
     return ListView(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         TextField(
           controller: _controllerId,
-          decoration: InputDecoration(hintText: "Id:"),
+          decoration: const InputDecoration(hintText: "Id:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: _controllerAge,
-          decoration: InputDecoration(hintText: "Age:"),
+          decoration: const InputDecoration(hintText: "Age:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: _controllerJob,
-          decoration: InputDecoration(hintText: "Job:"),
+          decoration: const InputDecoration(hintText: "Job:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: _controllerName,
-          decoration: InputDecoration(hintText: "Name:"),
+          decoration: const InputDecoration(hintText: "Name:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: _controllerEmail,
-          decoration: InputDecoration(hintText: "Email:"),
+          decoration: const InputDecoration(hintText: "Email:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: _controllerPhoneNumber,
-          decoration: InputDecoration(hintText: "PhoneNumber:"),
+          decoration: const InputDecoration(hintText: "PhoneNumber:"),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
             letEdit();
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserList(),
+                  builder: (context) => const UserList(),
                 ));
           },
-          child: Text(
+          style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: const Color.fromARGB(255, 28, 160, 183)),
+          child: const Text(
             "Update",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          style: ElevatedButton.styleFrom(
-              elevation: 0, backgroundColor: Color.fromARGB(255, 28, 160, 183)),
         )
       ],
     );
@@ -162,9 +158,10 @@ class _EditUserState extends State<EditUser> {
       if (response.statusCode == 200) {
         print(response.statusCode);
         final result = json.decode(response.body);
-        print("update successfully");
+        print("Up date Successfully!!!");
         return result;
       } else {
+        print(response.statusCode);
         var messageError = "Can not update this user!!";
         print(messageError);
       }

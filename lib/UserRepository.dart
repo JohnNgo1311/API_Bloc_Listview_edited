@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:bloc_demo/Model/User_Model.dart';
-import 'user_list.dart';
 
 // getUsers = fetchPost
 // UserRepository
