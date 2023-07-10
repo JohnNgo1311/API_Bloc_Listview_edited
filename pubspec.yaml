@@ -29,8 +29,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-retrofit: ^4.0.1
- flutter:
+  retrofit: ^4.0.1
+  flutter:
     sdk: flutter
   badges: ^3.1.1
 
@@ -43,7 +43,7 @@ retrofit: ^4.0.1
   equatable: ^2.0.5
   
 dev_dependencies:   
-  pull_to_refresh: ^2.0.0
+ 
   flutter_test:
     sdk: flutter
 
@@ -60,7 +60,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:    
   assets: 
-  - asset/images/bag_1.png
+    - asset/images/bag_1.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

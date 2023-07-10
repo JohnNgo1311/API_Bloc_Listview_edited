@@ -10,7 +10,6 @@ import 'package:bloc_demo/User_getAPI/bloc/user_get_api_event.dart';
 import 'package:bloc_demo/User_getAPI/bloc/user_get_api_state.dart';
 import 'package:bloc_demo/choose_page.dart';
 import 'package:bloc_demo/detail_screen.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:bloc_demo/login_screen.dart';
 import 'package:bloc_demo/shopping_page/shopping_page.dart';
 
@@ -25,8 +24,6 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
   TextEditingController filterKeyword = TextEditingController();
   final TextEditingController _controllerId = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
@@ -81,16 +78,18 @@ class _UserListState extends State<UserList> {
                         borderSide: BorderSide.none),
                     hintText: "Eg: Johny",
                     hintStyle: const TextStyle(color: Colors.black54),
-                    suffixIcon: IconButton(
+                    suffixIcon: Builder(
+                      builder: (context) => IconButton(
                         icon: const Icon(Icons.search),
                         color: Colors.black,
                         iconSize: 25,
                         onPressed: () {
-                          BlocProvider.of<UserBloc>(context)
-                              .add(FilterUserEvent(
-                            searchText: filterKeyword.text,
-                          ));
-                        })),
+                          BlocProvider.of<UserBloc>(context).add(
+                            FilterUserEvent(searchText: filterKeyword.text),
+                          );
+                        },
+                      ),
+                    )),
               ),
               BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
@@ -115,50 +114,42 @@ class _UserListState extends State<UserList> {
                       if (state.users.isEmpty) {
                         return const CircularProgressIndicator();
                       } else {
-                        return SmartRefresher(
-                          controller: _refreshController,
-                          onRefresh: () async {
-                            await Future.delayed(
-                                const Duration(milliseconds: 1000));
-                            _refreshController.refreshCompleted();
-                            BlocProvider.of<UserBloc>(context)
-                                .add(LoadUserEvent());
-                          },
-                          child: ListView.builder(
-                              itemCount: state.users.length,
-                              itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (c) => DetailScreen(
-                                            e: state.users[index],
-                                            userBloc: BlocProvider.of<UserBloc>(
-                                                context)),
+                        return ListView.builder(
+                          itemCount: state.users.length,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (c) => DetailScreen(
+                                      e: state.users[index],
+                                      userBloc: BlocProvider.of<UserBloc>(
+                                        context,
+                                        listen: false,
                                       ),
-                                    );
-                                  },
-                                  child: Card(
-                                    color:
-                                        const Color.fromARGB(255, 28, 160, 183),
-                                    child: ListTile(
-                                      leading: const SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: Icon(Icons.people)),
-                                      title: Text(
-                                        state.users[index].name.toString(),
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      ),
-                                      subtitle: Text(
-                                          state.users[index].email.toString(),
-                                          style: const TextStyle(
-                                              color: Colors.white)),
                                     ),
                                   ),
                                 );
-                              }),
+                              },
+                              child: Card(
+                                color: const Color.fromARGB(255, 28, 160, 183),
+                                child: ListTile(
+                                  leading: const SizedBox(
+                                      height: 40,
+                                      width: 40,
+                                      child: Icon(Icons.people)),
+                                  title: Text(
+                                    state.users[index].name.toString(),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  subtitle: Text(
+                                      state.users[index].email.toString(),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                ),
+                              ),
+                            );
+                          },
                         );
                       }
                     }

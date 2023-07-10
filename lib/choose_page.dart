@@ -1,7 +1,11 @@
 import 'package:bloc_demo/user_list.dart';
-import 'package:bloc_demo/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bloc_demo/shopping_page/shopping_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'UserRepository.dart';
+import 'User_getAPI/bloc/user_get_api_bloc.dart';
+import 'User_getAPI/bloc/user_get_api_event.dart';
 
 class ChoosePage extends StatefulWidget {
   const ChoosePage({super.key});
@@ -23,11 +27,16 @@ class _ChoosePageState extends State<ChoosePage> {
               icon: const Icon(Icons.arrow_back),
               color: Colors.white,
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ));
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return BlocProvider<UserBloc>.value(
+                      value: UserBloc(
+                          RepositoryProvider.of<UserRepository>(context))
+                        ..add(LoadUserEvent()),
+                      child: const UserList(),
+                    );
+                  },
+                ));
               }),
           title: Container(
             margin: EdgeInsets.only(left: appsize.width * 0.18),
